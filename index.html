@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>Galaxy Dapat Memahami Explorer</title>
+<style>
+*{box-sizing:border-box;margin:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%;overflow:hidden;background:#05010f;color:#fff;font-family:'Trebuchet MS',system-ui,sans-serif}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:radial-gradient(ellipse at 70% 15%,#3b1d7a,#120a35 55%,#05010f)}
+.stars{position:absolute;inset:0;background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(3px 3px at 150px 90px,#9ff,transparent),radial-gradient(2px 2px at 300px 200px,#fff,transparent);background-size:400px 300px;animation:dr 60s linear infinite}
+.stars.s2{background-size:700px 520px;opacity:.6;animation-duration:110s}
+@keyframes dr{to{background-position:-400px 300px}}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 60px 115px;text-align:center}
+.scr.on{display:flex}
+h1{font-size:96px;line-height:1.05;text-shadow:0 0 40px #8b5cf6;margin:10px 0}
+h2{font-size:70px;margin:10px 0}
+.sub{font-size:44px;color:#c9b8ff;margin-bottom:20px}
+.float{font-size:190px;animation:fl 4s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-30px) rotate(6deg)}}
+.btn{min-width:360px;height:110px;padding:0 48px;border:0;border-radius:60px;font-weight:800;font-size:44px;font-family:inherit;background:linear-gradient(#ffd23f,#ff9f1c);color:#2a1450;box-shadow:0 8px 0 #b36b00;cursor:pointer;margin:12px}
+.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #b36b00}
+.btn.alt{background:linear-gradient(#7dd3fc,#3b82f6);box-shadow:0 8px 0 #1e3a8a;color:#fff}
+.btn.sm{height:84px;font-size:34px;min-width:240px}
+.card{background:rgba(30,16,90,.8);border:3px solid #6d4fd8;border-radius:32px;padding:22px 30px}
+.how{font-size:36px;text-align:left;line-height:1.45;width:1500px}
+.cnt{width:120px;height:120px;border-radius:30px;border:5px solid #fff;background:#3b2aa8;color:#fff;font-size:60px;font-weight:800;margin:10px}
+.cnt.sel{background:#ffd23f;color:#2a1450}
+#names{display:flex;flex-wrap:wrap;justify-content:center;width:1700px;margin:10px 0}
+.pn{display:flex;align-items:center;border:4px solid;border-radius:24px;background:#1b1050;margin:10px;width:780px;overflow:hidden}
+.pn span{width:96px;height:92px;display:flex;align-items:center;justify-content:center;font-size:52px}
+.pn input{flex:1;height:92px;font-size:40px;background:transparent;border:0;outline:0;color:#fff;padding:0 20px;font-family:inherit;user-select:text;-webkit-user-select:text}
+.sbr{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.chip{display:flex;align-items:center;gap:12px;padding:8px 24px;border:4px solid;border-radius:40px;background:#1b1050;font-size:30px}
+.chip.cur{background:#4c2bb8;transform:scale(1.08);box-shadow:0 0 30px #a78bfa}
+.chip em{font-style:normal;color:#ffd23f;font-weight:800}
+#stP{font-size:42px;width:1400px;line-height:1.4;margin:16px 0}
+#s-play{justify-content:flex-start;padding-top:24px}
+#top{width:100%;display:flex;justify-content:space-between;align-items:center;padding-right:110px}
+#turn{font-size:46px;font-weight:800;padding:6px 34px;border-radius:50px;color:#1a0b3d}
+#hud{font-size:32px}
+#tm{width:100%;height:14px;background:#2a2070;border-radius:7px;overflow:hidden;margin:6px 0 12px}
+#tm i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff5d8f,#ffd23f,#7CFF6B)}
+#main{flex:1;width:100%;display:grid;grid-template-columns:1.05fr 1fr;gap:26px;min-height:0}
+#sim{display:flex;flex-direction:column;text-align:center}
+#sim h3{font-size:38px;color:#ffd23f}
+#simBody{flex:1;display:flex;flex-direction:column;justify-content:center}
+.bea{display:flex;justify-content:space-around;align-items:center;margin-bottom:14px}
+.bc{width:210px;height:190px;border-radius:28px;background:#241a5e;opacity:.55;color:#fff;font-size:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.15s}
+.bc b{font-size:60px}.bc.lit{opacity:1;background:#ffd23f;color:#2a1450;box-shadow:0 0 60px #ffd23f}
+.clk{font-size:46px;font-weight:800}
+.row{display:flex;gap:2px;margin:8px 0}.row i{flex:1;height:34px;border-radius:4px;background:#2a2070}
+.row i.a{background:#4cc9f0}.row.b i.a{background:#ff5d8f}.row i.both{background:#ffd23f;box-shadow:0 0 12px #ffd23f}
+#log{font-size:28px;line-height:1.5;margin-top:10px}.g{color:#ffd23f}
+.eq{font-size:36px;margin:12px 0 6px;font-weight:700}
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;min-height:46px}
+.dots i{width:20px;height:20px;border-radius:50%;background:#7CFF6B}.dots i.bad{background:#ff3b5c}
+#vd{font-size:38px;font-weight:800;margin-top:16px}
+.ok{color:#7CFF6B}.no{color:#ff7a90}
+#ctrl{display:flex;align-items:center;gap:18px;margin:8px 0}
+.rb{width:96px;height:96px;border-radius:50%;border:4px solid #fff;background:#3b2aa8;color:#fff;font-size:56px;font-weight:800}
+#rng{flex:1;height:64px;-webkit-appearance:none;appearance:none;background:transparent;touch-action:none}
+#rng::-webkit-slider-runnable-track{height:18px;border-radius:9px;background:#4a3aa8}
+#rng::-webkit-slider-thumb{-webkit-appearance:none;width:64px;height:64px;border-radius:50%;background:#ffd23f;margin-top:-23px;border:5px solid #fff}
+#rng::-moz-range-track{height:18px;border-radius:9px;background:#4a3aa8}
+#rng::-moz-range-thumb{width:54px;height:54px;border-radius:50%;background:#ffd23f;border:5px solid #fff}
+#hintS{font-size:26px;color:#c9b8ff}
+#rt{display:flex;flex-direction:column;min-height:0}
+#qc{font-size:34px;line-height:1.35;text-align:left;min-height:200px;display:flex;align-items:center}
+#opts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.opt{height:100px;font-size:56px;font-weight:800;border-radius:26px;border:4px solid #fff;background:#3b2aa8;color:#fff;font-family:inherit}
+.opt:disabled{opacity:.4}.opt.right{background:#16a34a}.opt.wrong{background:#dc2626}
+#fb{flex:1;font-size:27px;line-height:1.35;text-align:left;overflow:hidden}
+#fb h4{font-size:34px;margin-bottom:6px}
+#fb .btn{height:72px;font-size:32px;min-width:220px;margin:8px 0 0}
+.shake{animation:sk .4s}@keyframes sk{25%{transform:translateX(-14px)}75%{transform:translateX(14px)}}
+.row2{display:flex;justify-content:space-between;align-items:center;gap:30px;width:1100px;border:4px solid;border-radius:26px;background:#1b1050;padding:10px 30px;margin:8px;font-size:38px}
+.row2 em{font-style:normal;color:#ffd23f;font-weight:800;font-size:46px}.row2 span{font-size:28px;color:#c9b8ff}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:50}
+#fx span{position:absolute;font-size:44px;animation:pt 1.2s ease-out forwards}
+@keyframes pt{to{transform:translate(var(--dx),var(--dy)) scale(1.6);opacity:0}}
+#toast{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:#ffd23f;color:#2a1450;font-size:34px;font-weight:800;padding:12px 40px;border-radius:40px;z-index:60;display:none;white-space:nowrap}
+#fsb{position:absolute;right:24px;bottom:20px;z-index:40;height:84px;padding:0 30px;display:flex;align-items:center;gap:14px;border:4px solid #fff;border-radius:42px;background:#1d4ed8;color:#fff;font-size:28px;font-weight:800;font-family:inherit}
+#mute{position:absolute;right:24px;top:20px;z-index:40;width:84px;height:84px;border-radius:50%;font-size:42px;border:4px solid #fff;background:#3b2aa8;color:#fff}
+</style></head><body>
+<div id="stage"><div class="stars"></div><div class="stars s2"></div>
+<section class="scr on" id="s-open"><div class="float">🪐</div><h1>GALAXY DAPAT MEMAHAMI<br>EXPLORER</h1><p class="sub">Simulation Lab KPK &amp; FPB · Matematika Kelas 5 SD</p><div style="font-size:120px">🧑‍🚀 🤖 🚀</div><button class="btn" data-go="s-menu">▶ MULAI PETUALANGAN</button></section>
+<section class="scr" id="s-menu"><h1>MENU UTAMA</h1><p class="sub">Kapten Nova &amp; robot Nano siap menjelajah!</p><button class="btn" data-go="s-setup">🚀 MAIN</button><button class="btn alt" data-go="s-how">📖 CARA BERMAIN</button><button class="btn alt" data-go="s-open">🏠 DEPAN</button></section>
+<section class="scr" id="s-how"><h2>📖 Cara Bermain</h2><div class="card how">🔬 Geser pengatur simulasi (atau tombol − / +) untuk mengamati hasilnya.<br>✅ Setelah mengamati, pilih jawaban yang benar sebelum waktu 30 detik habis.<br>⭐ Benar = 100 poin + bonus kecepatan. Salah = −20 poin dan energi kapal −1.<br>🔋 Energi kapal habis = Game Over. Selesaikan 3 level untuk menyalakan galaksi!<br>👥 Bermain 1–4 pemain, bergiliran. Skor tertinggi menang.</div><button class="btn alt" data-go="s-menu">◀ KEMBALI</button></section>
+<section class="scr" id="s-setup"><h2>👥 Siapa yang bermain?</h2><div><button class="cnt" data-n="1">1</button><button class="cnt" data-n="2">2</button><button class="cnt" data-n="3">3</button><button class="cnt" data-n="4">4</button></div><div id="names"></div><div><button class="btn alt" data-go="s-menu">◀ KEMBALI</button><button class="btn" id="goBtn">🚀 MULAI MISI</button></div></section>
+<section class="scr" id="s-story"><div class="float" style="font-size:130px">🧑‍🚀🤖</div><h2 id="stT"></h2><p id="stP"></p><div id="stL" style="font-size:36px"></div><div class="sbr" id="stSB"></div><button class="btn" id="lvBtn">▶ MULAI LEVEL</button></section>
+<section class="scr" id="s-play"><div id="top"><div id="turn"></div><div id="hud"></div></div><div class="sbr" id="sbp" style="margin:8px 0"></div><div id="tm"><i></i></div>
+<div id="main"><div class="card" id="sim"><h3 id="simT"></h3><div id="simBody"></div><div id="ctrl"><button class="rb" id="bm">−</button><input type="range" id="rng" min="0" max="10" value="0"><button class="rb" id="bp">+</button></div><div id="hintS"></div></div>
+<div id="rt"><div class="card" id="qc"></div><div id="opts"></div><div class="card" id="fb"></div></div></div></section>
+<section class="scr" id="s-end"><div class="float" id="enE"></div><h2 id="enT"></h2><p class="sub" id="enS" style="width:1500px"></p><div id="enW" style="font-size:52px;font-weight:800;color:#ffd23f;margin:6px"></div><div id="enB"></div><div><button class="btn" id="again">🔁 MAIN LAGI</button><button class="btn alt" data-go="s-menu">🏠 MENU</button></div></section>
+<div id="toast"></div><div id="fx"></div>
+<button id="mute" aria-label="Suara">🔊</button>
+<button id="fsb"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>LAYAR PENUH</span></button>
+</div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const C=['#ff5d8f','#4cc9f0','#ffd23f','#7CFF6B'],IC=['🚀','🛸','🪐','⭐'];
+const gcd=(a,b)=>b?gcd(b,a%b):a,lcm=(a,b)=>a/gcd(a,b)*b;
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* Bank soal: [level, jenis, a, b] = 36 butir (12 per level), teks/opsi/kunci/penjelasan dibangkitkan */
+const BANK=[
+[1,'kpk',4,6],[1,'fpb',8,12],[1,'faktor',6,9],[1,'kelip',3,4],[1,'kpkc',6,8],[1,'fpbc',10,15],[1,'kpk',3,5],[1,'fpb',6,9],[1,'faktor',8,12],[1,'kelip',2,5],[1,'kpkc',4,10],[1,'fpbc',12,18],
+[2,'kpk',12,18],[2,'fpb',24,36],[2,'faktor',18,24],[2,'kelip',6,8],[2,'kpkc',9,12],[2,'fpbc',20,30],[2,'kpk',8,12],[2,'fpb',30,45],[2,'faktor',16,24],[2,'kelip',4,6],[2,'kpkc',15,20],[2,'fpbc',28,42],
+[3,'kpk',15,25],[3,'fpb',48,72],[3,'faktor',36,48],[3,'kelip',9,12],[3,'kpkc',18,24],[3,'fpbc',56,84],[3,'kpk',14,21],[3,'fpb',60,90],[3,'faktor',30,45],[3,'kelip',10,15],[3,'kpkc',12,16],[3,'fpbc',45,75]];
+const STORY=[['Level 1 · Suar Kembar','Galaksi Lumara gelap gulita! Kapten Nova dan robot Nano menemukan dua suar kuno yang berkedip dengan irama berbeda. Atur simulasinya, temukan kedipan bersama, dan nyalakan Keping Cahaya 1!'],['Level 2 · Kantong Kristal','Keping pertama menyala! Kini Nano harus membagi kristal ke kantong-kantong yang sama banyak tanpa sisa. Geser simulasi untuk mencari pembagi yang pas!'],['Level 3 · Gerbang Harmoni','Gerbang terakhir terbuka. Bilangannya makin besar, tetapi tim penjelajah pasti bisa. Selesaikan untuk menyatukan Kristal Harmoni!']];
+const MOT=['Hebat, Penjelajah!','Keren sekali!','Otak galaksi!','Mantap, Kapten!'];
+let S={},P=[],N=1,AC,mute=false;
+/* suara */
+function beep(f,d=.15,t='sine',v=.15){if(mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+const sfx={ok(){beep(660,.12);setTimeout(()=>beep(880,.2),110)},no(){beep(180,.3,'sawtooth',.1)},tap(){beep(440,.06)}};
+$('#mute').onclick=()=>{mute=!mute;$('#mute').textContent=mute?'🔇':'🔊'};
+/* skala & layar penuh */
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);$('#stage').style.transform=`translate(${(innerWidth-1920*s)/2}px,${(innerHeight-1080*s)/2}px) scale(${s})`}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,200));fit();
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)}
+const FS=()=>document.fullscreenElement||document.webkitFullscreenElement;
+$('#fsb').onclick=()=>{const d=document,e=d.documentElement,rq=e.requestFullscreen||e.webkitRequestFullscreen;
+ if(!rq){toast('Browser ini tidak mendukung layar penuh');return}
+ try{if(FS()){(d.exitFullscreen||d.webkitExitFullscreen).call(d)}else{const p=rq.call(e);if(p&&p.catch)p.catch(()=>toast('Layar penuh ditolak browser'))}}catch(x){toast('Layar penuh tidak bisa diaktifkan')}};
+['fullscreenchange','webkitfullscreenchange'].forEach(v=>document.addEventListener(v,()=>{$('#fsb span').textContent=FS()?'KELUAR LAYAR PENUH':'LAYAR PENUH';setTimeout(fit,100)}));
+/* navigasi */
+function show(id){$$('.scr').forEach(e=>e.classList.toggle('on',e.id===id))}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){sfx.tap();if(b.dataset.go==='s-setup')buildSetup();show(b.dataset.go)}const c=e.target.closest('.cnt');if(c){sfx.tap();N=+c.dataset.n;buildSetup()}});
+function buildSetup(){$$('.cnt').forEach(b=>b.classList.toggle('sel',+b.dataset.n===N));const w=$('#names'),old=[...$$('#names input')].map(i=>i.value);w.innerHTML='';for(let i=0;i<N;i++){w.insertAdjacentHTML('beforeend',`<label class="pn" style="border-color:${C[i]}"><span style="background:${C[i]}">${IC[i]}</span><input maxlength="12" id="nm${i}" placeholder="Nama Pemain ${i+1}" value="${esc(old[i]||'')}"></label>`)}}
+$('#goBtn').onclick=()=>{sfx.tap();P=[];for(let i=0;i<N;i++){P.push({name:($('#nm'+i).value||'').trim()||'Pemain '+(i+1),color:C[i],icon:IC[i]})}reset()};
+$('#again').onclick=()=>{sfx.tap();reset()};
+function reset(){P.forEach(p=>Object.assign(p,{score:0,ok:0,tot:0,streak:0}));S={lvl:0,lives:6,qi:0};intro()}
+function fillSB(sel,cur){$(sel).innerHTML=P.map((p,i)=>`<div class="chip ${i===cur?'cur':''}" style="border-color:${p.color}"><b>${p.icon}</b>${esc(p.name)}<em>${p.score}</em></div>`).join('')}
+function intro(){const s=STORY[S.lvl];$('#stT').textContent=s[0];$('#stP').textContent=s[1];$('#stL').textContent='Energi kapal: '+'🔋'.repeat(S.lives);fillSB('#stSB');show('s-story')}
+$('#lvBtn').onclick=()=>{sfx.tap();const per=P.length==1?5:P.length==2?4:3;S.qs=sh(BANK.filter(e=>e[0]==S.lvl+1)).slice(0,per*P.length);S.qi=0;showQ()};
+/* pembangkit soal */
+function mk(ans,c,f=()=>true){const s=sh([...new Set(c)].filter(x=>Number.isInteger(x)&&x>0&&x!==ans&&f(x))).slice(0,3);let k=1;while(s.length<3){const x=ans+k++;if(f(x)&&!s.includes(x))s.push(x)}return sh([ans,...s])}
+function build(e){const[lv,t,a,b]=e,g=gcd(a,b),l=lcm(a,b),o={t,a,b,g,l};o.time=['kpk','kpkc','kelip'].includes(t);o.max=o.time?(t=='kelip'?2*l:l)+2:Math.min(a,b);
+ const cd=[];for(let d=1;d<=g;d++)if(g%d==0)cd.push(d);
+ if(t=='kpk'){o.text=`Suar A berkedip setiap ${a} detik dan suar B setiap ${b} detik. Keduanya berkedip bersama di detik 0. Pada detik ke berapa mereka berkedip bersama lagi untuk pertama kalinya?`;o.ans=l;o.opts=mk(l,[a*b,a+b,l+a,l+b,g,l*2,l-a,l-b,l/2])}
+ if(t=='kpkc'){o.text=`Bus Roket A berangkat setiap ${a} menit dan Bus Roket B setiap ${b} menit. Keduanya berangkat bersama pada menit 0. Berapa menit kemudian mereka berangkat bersama lagi?`;o.ans=l;o.opts=mk(l,[a*b,a+b,l+a,l+b,g,l*2,l-a,l-b,l/2])}
+ if(t=='kpk'||t=='kpkc')o.exp=`KPK ${a} dan ${b} = ${l}. Cek: ${l} ÷ ${a} = ${l/a} dan ${l} ÷ ${b} = ${l/b} (habis), dan tidak ada bilangan lebih kecil yang habis dibagi keduanya.`;
+ if(t=='kelip'){o.text=`Manakah yang merupakan kelipatan persekutuan dari ${a} dan ${b}? (Amati kotak yang menyala di kedua baris.)`;o.ans=2*l;o.opts=mk(2*l,[l+a,l+b,2*l-a,2*l-b,l-a,l-b,l+1],x=>x%a||x%b);o.exp=`${2*l} habis dibagi ${a} (${2*l/a}) dan ${b} (${2*l/b}). Bilangan lain hanya kelipatan salah satunya.`}
+ if(t=='fpb'){o.text=`Gunakan simulasi pembagian untuk menentukan FPB dari ${a} dan ${b}.`;o.ans=g;o.opts=mk(g,[l,Math.abs(a-b),g*2,g/2,Math.min(a,b),g+1,g-1,g*3])}
+ if(t=='fpbc'){o.text=`Kapten Nova punya ${a} kristal merah dan ${b} kristal biru. Semuanya dimasukkan ke kantong dengan isi merah sama banyak dan biru sama banyak, tanpa sisa. Paling banyak ada berapa kantong?`;o.ans=g;o.opts=mk(g,[l,Math.abs(a-b),g*2,g/2,Math.min(a,b),g+1,g-1,g*3])}
+ if(t=='fpb'||t=='fpbc')o.exp=`FPB ${a} dan ${b} = ${g}. ${a} ÷ ${g} = ${a/g} dan ${b} ÷ ${g} = ${b/g} (habis). Tidak ada pembagi persekutuan yang lebih besar.`;
+ if(t=='faktor'){o.text=`Berapa banyak faktor persekutuan dari ${a} dan ${b}? (Cari jumlah k yang membuat keduanya habis dibagi.)`;o.ans=cd.length;o.opts=mk(cd.length,[cd.length+1,cd.length-1,cd.length+2,g,cd.length*2]);o.exp=`Faktor persekutuan ${a} dan ${b}: ${cd.join(', ')}. Jumlahnya ${cd.length}.`}
+ return o}
+function wh(o,p){const{t,a,b,g,l}=o;
+ if(t=='kpk'||t=='kpkc')return p===a*b?`Hasil kali (${p}) belum tentu yang terkecil. Cari kelipatan persekutuan TERKECIL.`:p===g?'Itu FPB. KPK adalah kelipatan, bukan faktor.':p<Math.max(a,b)?'KPK tidak mungkin lebih kecil dari bilangan terbesar.':(p%a||p%b)?'Angka itu bukan kelipatan dari kedua bilangan.':'Itu kelipatan persekutuan, tetapi bukan yang TERKECIL.';
+ if(t=='fpb'||t=='fpbc')return p===l?'Itu KPK. FPB adalah faktor, selalu ≤ bilangan terkecil.':p>Math.min(a,b)?'FPB tidak mungkin lebih besar dari bilangan terkecil.':(a%p||b%p)?`${p} tidak membagi habis kedua bilangan.`:'Itu faktor persekutuan, tetapi bukan yang TERBESAR.';
+ if(t=='faktor')return 'Daftar semua pembagi yang menyisakan 0 untuk kedua bilangan, termasuk 1.';
+ return `${p} bukan kelipatan ${p%a?a:b}. Kelipatan persekutuan harus habis dibagi KEDUANYA.`}
+/* gameplay */
+function showQ(){const e=S.qs[S.qi];S.pi=S.qi%P.length;const p=P[S.pi];S.q=build(e);S.touched=false;S.done=false;const o=S.q;
+ $('#turn').textContent=`Giliran: ${p.icon} ${p.name}`;$('#turn').style.background=p.color;
+ $('#hud').textContent=`Level ${S.lvl+1}/3 · Soal ${S.qi+1}/${S.qs.length} · ${'🔋'.repeat(S.lives)}`;fillSB('#sbp',S.pi);
+ $('#qc').innerHTML=`<div>${o.text}</div>`;
+ $('#opts').innerHTML=o.opts.map(v=>`<button class="opt" data-v="${v}" disabled>${v}</button>`).join('');
+ $('#fb').innerHTML='<h4>🔬 Amati dulu!</h4>Atur simulasi di sebelah kiri, lalu pilih jawaban.';
+ const r=$('#rng');if(o.time){$('#simT').textContent='🔦 Lab Suar Kembar';r.min=0;r.max=o.max;r.value=0;
+  $('#simBody').innerHTML=`<div class="bea"><div class="bc" id="bA"><b>A</b>tiap ${o.a} dtk</div><div class="clk">⏱ <span id="tv">0</span> detik</div><div class="bc" id="bB"><b>B</b>tiap ${o.b} dtk</div></div><div class="row" id="rA">${'<i></i>'.repeat(o.max)}</div><div class="row b" id="rB">${'<i></i>'.repeat(o.max)}</div><div id="log"></div>`;
+  $('#hintS').textContent='Geser waktu. Kotak terang = suar berkedip; emas = berkedip bersama.'}
+ else{$('#simT').textContent='🧪 Lab Pembagian Kristal';r.min=1;r.max=o.max;r.value=1;
+  $('#simBody').innerHTML='<div class="eq" id="eqA"></div><div class="dots" id="dA"></div><div class="eq" id="eqB"></div><div class="dots" id="dB"></div><div id="vd"></div>';
+  $('#hintS').textContent='Geser k = jumlah kelompok sama. Titik hijau = terbagi rata, merah = sisa.'}
+ upd(+r.value);S.t0=performance.now();clearInterval(S.iv);S.iv=setInterval(tick,100);show('s-play')}
+function upd(v){const o=S.q;S.val=v;$('#rng').value=v;
+ if(o.time){const A=v>0&&v%o.a==0,B=v>0&&v%o.b==0;$('#tv').textContent=v;$('#bA').classList.toggle('lit',A);$('#bB').classList.toggle('lit',B);
+  [['#rA',o.a],['#rB',o.b]].forEach(([s,k])=>$$(s+' i').forEach((c,i)=>{const x=i+1;c.className=(x<=v&&x%k==0)?(x%o.a==0&&x%o.b==0?'both':'a'):''}));
+  const m=k=>{const r=[];for(let x=k;x<=v;x+=k)r.push(x);return r.slice(-7).join(', ')||'-'};
+  $('#log').innerHTML=`Suar A: ${m(o.a)}<br>Suar B: ${m(o.b)}`+(A&&B?`<br><b class="g">✨ Berkedip BERSAMA di detik ${v}!</b>`:'')}
+ else{const k=v||1,dots=(n)=>{const f=Math.floor(n/k);let h='';for(let i=0;i<n;i++)h+=`<i class="${i<f*k?'':'bad'}"${(i+1)%f==0&&i<f*k-1?' style="margin-right:16px"':''}></i>`;return h};
+  $('#dA').innerHTML=dots(o.a);$('#dB').innerHTML=dots(o.b);
+  $('#eqA').textContent=`${o.a} ÷ ${k} = ${Math.floor(o.a/k)}, sisa ${o.a%k}`;$('#eqB').textContent=`${o.b} ÷ ${k} = ${Math.floor(o.b/k)}, sisa ${o.b%k}`;
+  $('#vd').innerHTML=(o.a%k||o.b%k)?'<span class="no">❌ Ada sisa, belum pas</span>':`<span class="ok">✅ ${k} kelompok sama tanpa sisa! (${o.a/k} dan ${o.b/k} tiap kelompok)</span>`}}
+function touch(v){if(S.done)return;const r=$('#rng');v=Math.max(+r.min,Math.min(+r.max,v));upd(v);if(!S.touched){S.touched=true;$$('.opt').forEach(b=>b.disabled=false);$('#fb').innerHTML='<h4>✅ Simulasi aktif!</h4>Pelajari hasilnya, lalu pilih jawaban.'}}
+$('#rng').addEventListener('input',e=>touch(+e.target.value));
+$('#bm').onclick=()=>{sfx.tap();touch(S.val-1)};$('#bp').onclick=()=>{sfx.tap();touch(S.val+1)};
+$('#opts').addEventListener('click',e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)answer(+b.dataset.v,b)});
+function tick(){const left=Math.max(0,30-(performance.now()-S.t0)/1000);S.left=left;$('#tm i').style.width=left/30*100+'%';if(left<=0&&!S.done)answer(null)}
+function burst(n=24,x=960,y=540){const f=$('#fx');for(let i=0;i<n;i++){const s=document.createElement('span');s.textContent=['⭐','✨','🌟','💫'][i%4];s.style.cssText=`left:${x}px;top:${y}px;--dx:${(Math.random()-.5)*900}px;--dy:${(Math.random()-.5)*700}px`;f.appendChild(s);setTimeout(()=>s.remove(),1300)}}
+function answer(pick,btn){if(S.done)return;S.done=true;clearInterval(S.iv);const o=S.q,p=P[S.pi],ok=pick===o.ans;p.tot++;let h;
+ $$('.opt').forEach(b=>{b.disabled=true;if(+b.dataset.v===o.ans)b.classList.add('right')});
+ if(ok){const bonus=Math.round(S.left/30*50),pts=100+bonus;p.score+=pts;p.ok++;p.streak++;sfx.ok();burst(26,1400,600);
+  h=`<h4 class="ok">✅ ${MOT[Math.random()*4|0]} +${pts} poin (bonus cepat ${bonus})</h4>${o.exp}`;
+  if(bonus>=40)toast('⚡ Kilat Kosmik! Jawaban super cepat');else if(p.streak==3)toast('🔥 Beruntun 3 jawaban benar!')}
+ else{const pen=Math.min(p.score,20);p.score-=pen;p.streak=0;S.lives--;sfx.no();if(btn)btn.classList.add('wrong');$('#main').classList.add('shake');setTimeout(()=>$('#main').classList.remove('shake'),400);
+  h=`<h4 class="no">${pick===null?'⏰ Waktu habis!':'❌ Belum tepat.'} −${pen} poin, energi −1</h4>${pick===null?'':wh(o,pick)+' '}Jawaban benar: <b>${o.ans}</b>. ${o.exp}`}
+ $('#fb').innerHTML=h+'<br><button class="btn sm alt" id="nx">LANJUT ▶</button>';fillSB('#sbp',S.pi);
+ $('#hud').textContent=`Level ${S.lvl+1}/3 · Soal ${S.qi+1}/${S.qs.length} · ${'🔋'.repeat(Math.max(0,S.lives))}`;
+ $('#nx').onclick=()=>{sfx.tap();next()}}
+function next(){S.qi++;if(S.lives<=0)return end(false);
+ if(S.qi>=S.qs.length){P.forEach(p=>p.score+=50);S.lives=Math.min(6,S.lives+1);toast('🎖️ Misi selesai! +50 poin tiap pemain');if(S.lvl>=2)return end(true);S.lvl++;return intro()}
+ showQ()}
+function end(w){clearInterval(S.iv);const r=[...P].sort((a,b)=>b.score-a.score),top=r[0].score,ws=r.filter(p=>p.score===top);
+ $('#enE').textContent=w?'🏆':'💥';$('#enT').textContent=w?'MISI BERHASIL! Galaksi Menyala Kembali!':'GAME OVER · Energi Kapal Habis';
+ $('#enS').textContent=w?'Kristal Harmoni utuh berkat KPK dan FPB. Kapten Nova dan Nano berterima kasih!':'Jangan menyerah! Coba lagi dan amati simulasi lebih teliti.';
+ $('#enW').textContent=P.length==1?`Skor akhir ${P[0].name}: ${top}`:ws.length>1?'🤝 SERI! '+ws.map(p=>p.name).join(' & ')+` (${top} poin)`:`👑 Pemenang: ${ws[0].name} (${top} poin)`;
+ $('#enB').innerHTML=r.map((p,i)=>`<div class="row2" style="border-color:${p.color}"><b>#${i+1}</b><b>${p.icon} ${esc(p.name)}</b><span>${p.ok}/${p.tot} benar</span><em>${p.score}</em></div>`).join('');
+ show('s-end');if(w){sfx.ok();burst(50)}else sfx.no()}
+</script></body></html>
